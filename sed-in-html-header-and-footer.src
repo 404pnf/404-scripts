@@ -1,0 +1,7 @@
+# 这里不要用单引号。在bash下直接输入才需要单引号
+# 参考： http://www.unix.com/shell-programming-scripting/6744-sed-insert-text-top-file.html
+1i\
+<!doctype html>\n<head>\n<meta charset="utf-8">\n</head>\n<body>
+
+$a\
+</body>\n</html>
