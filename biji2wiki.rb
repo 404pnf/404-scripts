@@ -10,11 +10,14 @@ def sanitize(title)
   # 所有键盘上可以按出来的标点符号，中文和英文的我都替换掉
   # 中文标点所有 http://zh.wikipedia.org/zh/%E6%A0%87%E7%82%B9%E7%AC%A6%E5%8F%B7
   # http://www.ruanyifeng.com/blog/2007/07/english_punctuation.html
-  title.tr!(' `~!@#$%^&*()_+=\|][{}"\';:/?.>,<', '_')
-  title.tr!('·～！@#￥%……&*（）——+、|】』【『‘“；：/？。》，《', '_')
-  title.gsub!(/_+/, '_')
-  title.gsub!(/^_+/, '') #如果前几个字符是下划线，去除
-  title.gsub!(/_+$/, '') #如果最后几个字符是下划线，去除
+  
+  
+  # 不要用 tr! 和 gsub! 因为如果没有任何替换的话 他们会返回 nil 而不是原字符串！！！
+  title = title.tr' `~!@#$%^&*()_+=\|][{}"\';:/?.>,<', '_')
+  title = title.tr('·～！@#￥%……&*（）——+、|】』【『‘“；：/？。》，《', '_')
+  title = title.gsub(/_+/, '_')
+  title = title.gsub(/^_+/, '') #如果前几个字符是下划线，去除
+  title = title.gsub(/_+$/, '') #如果最后几个字符是下划线，去除
 end
 
 

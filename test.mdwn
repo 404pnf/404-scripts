@@ -1,0 +1,80 @@
+This text, though not within an element, should also be shown.##heading 1.1
+
+
+
+text *italic* and **bold**.
+
+
+text *italic* and **bold**.
+sdfsdff
+sdfsd
+sdf sdfsdf
+
+
+>text 
+italic and 
+**bold**
+. sdfsdff
+  sdfsd sdf sdfsdf
+
+
+
+asdasd 
+sdfsdfsdf asdad 
+[link text](http://www.bla.de)
+
+
+[link 
+**text**](http://www.bla.de)
+
+
+*List item
+
+
+*List 
+item
+
+*List item
+
+
+*dsfdsf
+
+*dfwe
+
+
+*dsfsdfsdf
+
+
+*lidsf 
+![item](http://www.dfgdfg.de/dsf.jpe)
+
+
+*sdfsdfsdf
+
+*sdfsdfsdf
+
+
+*sdfsdfsdf 
+**sdfsdf**>Lorem ipsum dolor sit amet, consetetur
+  voluptua. At vero eos et accusam et
+  justo duo dolores et ea rebum. Stet
+  clita kasd gubergren, no sea takimata
+  sanctus est Lorem ipsum dolor sit
+  amet. 
+italic
+
+
+
+****
+>Lorem ipsum dolor sit amet, consetetur
+  sadipscing elitr, sed diam nonumy
+  eirmod tempor invidunt ut labore et
+  dolore magna aliquyam erat, sed
+
+
+This should also be shown, even if it's not wrapped in an element.
+
+
+nur ein text! nur eine maschine!
+
+This text should not be invisible!
