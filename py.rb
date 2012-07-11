@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 require 'rss/2.0'
-require 'open-uri'
+#require 'open-uri'
 require 'fileutils'
 require 'yaml'
 require './sanitize-title.rb'
+require 'kramdown'
+require 'html2markdown'
 # ref: http://rubyrss.com/
 
 file = ARGV[0]
@@ -12,7 +14,7 @@ output = ARGV[1]
 File.open(file) do |f|
   response = f.read
   result = RSS::Parser.parse(response, false) # false 是说不去validate rss
-  puts "Channel: " + result.channel.title
+#  puts "Channel: " + result.channel.title
   result.items.each do |item|
     title = item.title.to_s.strip
     mytitle = sanitize(title).gsub(/_/, ' ')
@@ -25,6 +27,20 @@ File.open(file) do |f|
 
     content = item.description.to_s
     content = content.gsub(/\n/,"\n\n").gsub(/\n\n\n+/,"\n\n")
+    
+    #把之前emacs org中的标题格式替换为markdown的
+    content = content.gsub(/^\* /,'# ')
+    content = content.gsub(/^\*\* /, '## ')
+# 下面两个正则大错特错啦：）！！！
+# 我是想替换行开头的星号，结果忘了星号有特殊含义。
+#    content = content.gsub(/^* /,'# ')
+#    content =content.gsub(/^** /, '## ') #把之前emacs org中的标题格式替换为markdown的
+
+    # 有些早期文章有html标签
+    raw_html = HTMLPage.new :contents => content
+    content = raw_html.markdown
+
+
 
     # Get the relevant fields as a hash, delete empty fields and convert
     # to YAML for the header
@@ -33,16 +49,54 @@ File.open(file) do |f|
     'title' => mytitle.to_s,
     }.delete_if { |k,v| v.nil? || v == ''}.to_yaml
 
-    Dir.mkdir(output) if !File.exist?(output)
-    Dir.mkdir(year) if !File.exist?(year)
+    FileUtils.mkdir_p("#{output}/#{year}/}") if !File.exist?("#{output}/#{year}/}")
+    # Dir.mkdir 不能生成recursive目录，如 Dir..mkdir('1/2/3') 不行的！
 
-    File.open("#{output}/#{year}/#{date}-#{fn}.markdown", "w:utf-8") do |file|
+    File.open("#{output}/#{year}/#{date}-#{fn}.txt", "w:utf-8") do |file|
       #file.puts data
       #file.puts "---"
       #file.puts
+      file.puts "# " + mytitle
+      file.puts
       file.puts content
     end
 
+    html_content = Kramdown::Document.new(content, :auto_ids => false).to_html
+
+    html_header = <<EOF
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>#{mytitle}</title>
+    <link href="pengyou.rijiben.org/css/bootstrap.css" rel="stylesheet">
+    </head>
+    <body>
+EOF
+    
+    html_footer = <<EOF
+    </body>
+    <footer>
+    <a href="http://pengyou.rijiben.org">Home</a>
+    </footer>
+</html>
+EOF
+
+    # 同时生成html页面啦 hiahia
+    FileUtils.mkdir_p("html-posts/#{year}/}") if !File.exist?("html-posts/#{year}/}")
+    File.open("html-posts/#{year}/#{date}-#{fn}.html", "w:utf-8") do |file|
+      #file.puts data
+      #file.puts "---"
+      #file.puts
+      file.puts html_header
+      file.puts
+      file.puts "<h1>#{mytitle}</h1>"
+      file.puts
+      file.puts html_content
+      file.puts
+      file.puts html_footer
+    end
+    
   end      # end each
 end # end File.open
 
