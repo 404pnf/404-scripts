@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'fileutils'
-#require 'open-uri'
 require 'cgi'
+
 # usage: script dir
 
 # 脚本进入dir，生成文件列表index.html
@@ -29,7 +29,8 @@ def collectLinks(filenames)
   filenames.each do |fn|
     url = CGI::escape(fn)
     # url = URI::encode(fn)  在ruby 1.9中会报 URI.escape is obsolete 过时啦
-    link = "<li><a href=\"#{url}\">#{fn}</a></li>"
+    articleTitle = fn.sub(/-20..*$/, '') # 文件名类似 钱胜杰-母与子-2011-10-05-18635.html 去掉后边部分
+    link = "<li><a href=\"#{url}\">#{articleTitle}</a></li>"
     links << link
   end
   links
@@ -38,11 +39,12 @@ def writeIndex(links)
   abs_path = Dir.pwd # 返回当前目录的绝对路径
   folder = abs_path.split('/').last # 当前目录的名字
   File.open("#{abs_path}/index.html", "w") do |f|
+    f.puts '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + folder + '</title><link href="/css/local.css" rel="stylesheet"></head><body>'
     f.puts "<h1>#{folder}</h1>"
     f.puts "<ul id=\"index_page\">"
     f.puts links
     f.puts "</ul>"
-    f.puts "<div id='footer'><a href=\"/\">主页</a>/</div>"
+    f.puts '</body><footer><a href="/">主页</a></footer></html>'
   end
 end
 # 进入、处理和退出子目录
