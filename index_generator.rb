@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 require 'fileutils'
-require 'open-uri'
+#require 'open-uri'
+require 'cgi'
+# usage: script dir
 
-# 1、生成当前目录的index.html文件
-# 2、进入到当前目录的所有子目录并生成其对应的index.html文件
+# 脚本进入dir，生成文件列表index.html
+# 脚本进入dir的第一级子目录，生成对应的文件列表index.html
 
-# 当前目录的所有文件和目录
+# dir目录所有文件和目录
 # 返回文件名数组
 def getFileList 
   Dir.entries('.').sort
@@ -21,12 +23,14 @@ end
 # 输出 当前目录下生成index.html文件
 def collectLinks(filenames)
   links = []
+  filenames.reject! do |fn| 
+    fn == '.' or fn == '..' or fn == 'index.html'
+  end # 去掉当前目录，上级目录和index.html(之前运行过本脚本会有已经生成的index.html不应该包括在内)
   filenames.each do |fn|
-    url = URI::encode(fn)
+    url = CGI::escape(fn)
+    # url = URI::encode(fn)  在ruby 1.9中会报 URI.escape is obsolete 过时啦
     link = "<li><a href=\"#{url}\">#{fn}</a></li>"
     links << link
-    links.delete('.')
-    links.delete('..')
   end
   links
 end
@@ -35,7 +39,7 @@ def writeIndex(links)
   folder = abs_path.split('/').last # 当前目录的名字
   File.open("#{abs_path}/index.html", "w") do |f|
     f.puts "<h1>#{folder}</h1>"
-    f.puts "<ul>"
+    f.puts "<ul id=\"index_page\">"
     f.puts links
     f.puts "</ul>"
     f.puts "<div id='footer'><a href=\"/\">主页</a>/</div>"
@@ -49,8 +53,10 @@ def enterAndExit(dirname)
   Dir.chdir('..')
 end
 def main 
-  getFolderList.each do |dir|
-    enterAndExit(dir)
+  inputDir = ARGV[0].sub('/','') # de-slashing
+  Dir.chdir(inputDir)
+  getFolderList.each do |folder|
+    enterAndExit(folder)
   end
 end
 # 开始工作吧 ：）
